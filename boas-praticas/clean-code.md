@@ -20,6 +20,7 @@ A definição de nome é essencial para o bom entendimento de um código. Aqui, 
 
 1. Ele deve ser preciso e passar logo de cara sua ideia central. Ou seja, deve ir direto ao ponto;
 2. Não se deve ter medo de nomes grandes. Se a sua função ou parâmetro precisa de um nome extenso para demonstrar o que realmente representa, é o que deve ser feito.
+
 ```C#
 // Bad
 var a = new List<Product>();
