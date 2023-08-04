@@ -1,6 +1,22 @@
 # Clean Code
 
-Um dos principais erros que os programadores cometem é acreditar que, uma vez que o código está pronto e funcionando, não precisa mais de revisão. Porém, um sistema nunca está totalmente finalizado, sempre existe a necessidade de atualizações e novas funcionalidades. Além disso, o código envelhece e pode se tornar obsoleto. É nesse cenário que o Clean Code se encaixa.
+Clean Code ou código limpo se refere a um conjunto de boas práticas na escrita de software que você pode aplicar para obter uma maior legibilidade e manutenabilidade do seu código.
+
+## As 7 principais regras do Clean Code
 
 
-A ideia por trás dos seus princípios é tornar o desenvolvimento e a manutenção cada vez mais simples. Afinal, um código sendo remendado por muito tempo torna-se impossível de manter, fazendo com que seja mais vantajoso iniciar do zero do que prosseguir em uma versão ruim. Logo, o código limpo evita gastos desnecessários com manutenção e torna o software preparado para novas atualizações e melhorias.
+No livro do Uncle Bob foram listadas algumas boas práticas para se obter um código limpo. Os principais são:
+1. [Nome são importantes](https://github.com/qbem-repos/developers/main/boas-praticas/clean-code.md#1-nomes-s%C3%A3o-muito-importantes)
+2. Regra do escoteiro
+3. Seja o verdadeiro autor do código
+4. DRY (Don’t Repeat Yourself)
+5. Comente apenas o necessário
+6. Tratamento de erros
+7. Testes limpos
+
+## 1. Nomes são muito importantes
+
+A definição de nome é essencial para o bom entendimento de um código. Aqui, não importa o tipo de nome, seja ele: Variável,Função, Parâmetro, Classe e Método.
+Ao definir um nome, é preciso ter em mente 2 pontos principais:
+1. Ele deve ser preciso e passar logo de cara sua ideia central. Ou seja, deve ir direto ao ponto;
+2. Não se deve ter medo de nomes grandes. Se a sua função ou parâmetro precisa de um nome extenso para demonstrar o que realmente representa, é o que deve ser feito.
