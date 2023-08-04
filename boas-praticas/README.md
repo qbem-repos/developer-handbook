@@ -1,3 +1,5 @@
 # Boas Práticas
 
-Para o desenvolvimento de softwares de qualidade é necessário dominar um conjunto de habilidades e conhecimentos que fazem com que o este processo se mantenha organizado e com crescimento constante, esse conjunto de técnicas quando utilizado de forma saudável pode ser descrito como boas práticas.  Se todas estas técnicas forem documentadas podem render um bom guia para esta mítica tarefa de criar softwares. Neste artigo abordo de maneira simplificada treze tópicos que podem auxiliar no entendimento do que envolve o desenvolvimento de software e serem adotados como boas práticas.
+Para o desenvolvimento de softwares de qualidade é necessário dominar um conjunto de habilidades e conhecimentos que fazem com que o este processo se mantenha organizado e com crescimento constante, esse conjunto de técnicas quando utilizado de forma saudável pode ser descrito como boas práticas.
+
+1. [Clean Code](https://qbem-repos.github.io/developers/boas-praticas/clean-code)
