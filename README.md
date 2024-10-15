@@ -9,7 +9,7 @@ Index:
    - [Object Calisthenics](https://qbem-repos.github.io/developer-handbook/boas-praticas)
    - [Criação de pacotes e tookits](https://qbem-repos.github.io/developer-handbook/boas-praticasboas-praticas/package-best-pratices)
    - [Test Driven Development](https://qbem-repos.github.io/developer-handbook/boas-praticas)
-   - [Defensive Development]https://qbem-repos.github.io/developer-handbook/boas-praticas()
+   - [Defensive Development](https://qbem-repos.github.io/developer-handbook/boas-praticas)
    - [Code Review](https://qbem-repos.github.io/developer-handbook/boas-praticas)
    - [Sync vs Async](https://qbem-repos.github.io/developer-handbook/boas-praticas)
 4. [Local Development](https://qbem-repos.github.io/developer-handbook/boas-praticas)
