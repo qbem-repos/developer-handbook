@@ -1,11 +1,15 @@
 # Configuração para o GitHub Pages
 title: "Developer Handbook"
 description: "Documentação e práticas recomendadas para desenvolvedores."
-url: "https://github.com/qbem-repos"
+url: "https://qbem-repos.github.io"
 baseurl: "/developer-handbook"
 
 # Tema do Jekyll
-theme: "hacker"
+remote_theme: "pages-themes/hacker@v0.2.0"
 
 # Caminho do logotipo
 logo: "/assets/images/logo.webp"
+
+# Outras configurações recomendadas para GitHub Pages
+plugins:
+  - jekyll-feed
