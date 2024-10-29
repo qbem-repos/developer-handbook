@@ -1,5 +1,3 @@
-# Qbem Developer Handbook
-
 Playbook para desenvolvedores novos e experientes da Qbem.
 
 Index:
