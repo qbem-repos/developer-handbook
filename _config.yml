@@ -4,6 +4,9 @@ description: "Documentação e práticas recomendadas para desenvolvedores."
 url: "https://seuusuario.github.io/seurepositorio"
 baseurl: "/seurepositorio"
 
+# Tema do Jekyll
+theme: "minima"
+
 # Configurações de compilação
 lsi: false
 safe: true
@@ -29,3 +32,6 @@ exclude:
   - "Gemfile.lock"
   - "node_modules/"
   - "vendor/"
+
+# Caminho do logotipo
+logo: "/assets/images/logo.webp"
