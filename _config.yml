@@ -7,19 +7,5 @@ baseurl: "/developer-handbook"
 # Tema do Jekyll
 theme: "minima"
 
-# Configurações de compilação
-lsi: false
-safe: true
-incremental: false
-highlighter: "rouge"
-
-# Configurações de kramdown e mathjax
-kramdown:
-  input: GFM
-  math_engine: mathjax
-  syntax_highlighter_opts:
-    default_lang: "markdown"
-    guess_lang: false
-
 # Caminho do logotipo
 logo: "/assets/images/logo.webp"
