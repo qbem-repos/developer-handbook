@@ -1,0 +1,31 @@
+# Configuração para o GitHub Pages
+title: "Developer Handbook"
+description: "Documentação e práticas recomendadas para desenvolvedores."
+url: "https://seuusuario.github.io/seurepositorio"
+baseurl: "/seurepositorio"
+
+# Configurações de compilação
+lsi: false
+safe: true
+incremental: false
+highlighter: "rouge"
+
+# Configurações de kramdown e mathjax
+kramdown:
+  input: GFM
+  math_engine: mathjax
+  syntax_highlighter_opts:
+    default_lang: "markdown"
+    guess_lang: false
+
+# Configurações para Jekyll Gist (não é necessário para GitHub Pages)
+gist:
+  noscript: false
+
+# Exclude pode ser adicionado para ignorar arquivos
+exclude:
+  - "README.md"
+  - "Gemfile"
+  - "Gemfile.lock"
+  - "node_modules/"
+  - "vendor/"

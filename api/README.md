@@ -12,10 +12,6 @@ Este documento descreve as diretrizes e boas práticas para as APIs Web RESTful 
 - Códigos de status padrão e cabeçalhos personalizados.
 - Boas práticas de segurança e versionamento.
 
-**Arquivos de Suporte:**
-- **requests.http**: Contém exemplos de requisições HTTP para facilitar testes e validação dos endpoints RESTful diretamente a partir do editor de código.
-- **postman_collection.json**: Coleção do Postman com todos os endpoints das APIs Web RESTful, facilitando o desenvolvimento e testes.
-
 ---
 
 ### 2. [APIs de Webhook](webhooks.md)
@@ -26,9 +22,6 @@ Este documento detalha as diretrizes para configuração e uso de Webhooks na QB
 - Cabeçalhos customizados e segurança com assinatura HMAC.
 - Boas práticas para implementação de Webhooks, como lógica de retry, verificação de assinatura e controle de duplicidade.
 
-**Arquivos de Suporte:**
-- **webhook_requests.http**: Exemplo de requisições para Webhooks para facilitar o desenvolvimento e simulação.
-- **postman_collection.json**: Coleção do Postman para testes de Webhooks, incluindo exemplos de eventos e cabeçalhos de autenticação.
 
 ---
 
@@ -40,9 +33,6 @@ Este documento aborda as diretrizes para implementação de APIs assíncronas da
 - Cabeçalhos e metadados para rastreamento e controle de mensagens.
 - Boas práticas para APIs assíncronas, como controle de idempotência, retry e segurança.
 
-**Arquivos de Suporte:**
-- **kafka_requests.http**: Exemplo de requisições simulando operações com tópicos Kafka para testes.
-- **postman_collection.json**: Coleção do Postman com exemplos de mensagens e chamadas assíncronas para Redis e Kafka.
 
 ---
 
