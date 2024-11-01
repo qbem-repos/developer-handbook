@@ -5,7 +5,7 @@ url: "https://qbem-repos.github.io"
 baseurl: "/developer-handbook"
 
 # Tema do Jekyll
-theme: minima
+theme: minimal
 
 # Caminho do logotipo
 logo: "/assets/images/logo.webp"
