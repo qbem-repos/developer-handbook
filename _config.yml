@@ -19,20 +19,9 @@ plugins:
 markdown: kramdown
 highlighter: rouge
 
-# Configurações de navegação
-exclude:
-  - Gemfile
-  - Gemfile.lock
-  - README.md
-  - node_modules
-  - vendor
-  - script
-
 # SEO e Open Graph
 social_links:
   - github_username: "qbem-repos"
-  - twitter_username: "qbem"
-  - linkedin: "company/qbem"
 
 # Configuração de permalinks para URLs amigáveis
 permalink: pretty
