@@ -1,6 +1,6 @@
 # Diretrizes e Boas Práticas para APIs Assíncronas da QBem
 
-Este documento fornece orientações e melhores práticas para a implementação e uso de APIs assíncronas na QBem, utilizando **MQ (Redis)** e **Pub/Sub (Kafka)**. As APIs assíncronas permitem a comunicação entre serviços em tempo real, promovendo um sistema escalável e eficiente.
+Este documento fornece orientações e melhores práticas para a implementação e uso de APIs assíncronas na QBem, utilizando **MQ (RabbitMQ)** e **Pub/Sub (Kafka)**. As APIs assíncronas permitem a comunicação entre serviços em tempo real, promovendo um sistema escalável e eficiente.
 
 ## Índice
 - [Diretrizes e Boas Práticas para APIs Assíncronas da QBem](#diretrizes-e-boas-práticas-para-apis-assíncronas-da-qbem)
@@ -9,13 +9,13 @@ Este documento fornece orientações e melhores práticas para a implementação
     - [Casos de Uso para APIs Assíncronas](#casos-de-uso-para-apis-assíncronas)
   - [Estrutura de Mensagens](#estrutura-de-mensagens)
   - [Configuração de Fila e Tópico](#configuração-de-fila-e-tópico)
-    - [Redis (Message Queue)](#redis-message-queue)
+    - [RabbitMQ (Message Queue)](#rabbitmq-message-queue)
     - [Kafka (Pub/Sub)](#kafka-pubsub)
   - [Métodos de Comunicação](#métodos-de-comunicação)
-    - [Redis](#redis)
+    - [RabbitMQ](#rabbitmq)
     - [Kafka](#kafka)
   - [Cabeçalhos e Metadados](#cabeçalhos-e-metadados)
-    - [Redis](#redis-1)
+    - [RabbitMQ](#rabbitmq-1)
     - [Kafka](#kafka-1)
   - [Boas Práticas para APIs Assíncronas](#boas-práticas-para-apis-assíncronas)
   - [Documentação e Exemplo de Mensagens](#documentação-e-exemplo-de-mensagens)
@@ -26,7 +26,7 @@ Este documento fornece orientações e melhores práticas para a implementação
 
 ## Visão Geral
 
-As APIs assíncronas na QBem utilizam Redis e Kafka para o envio e recebimento de mensagens entre serviços. O Redis é utilizado para filas de mensagens (Message Queue), enquanto o Kafka gerencia a comunicação baseada em tópicos (Pub/Sub), sendo ideal para a transmissão de dados em larga escala e baixa latência.
+As APIs assíncronas na QBem utilizam RabbitMQ e Kafka para o envio e recebimento de mensagens entre serviços. O RabbitMQ é utilizado para filas de mensagens (Message Queue), enquanto o Kafka gerencia a comunicação baseada em tópicos (Pub/Sub), sendo ideal para a transmissão de dados em larga escala e baixa latência.
 
 ### Casos de Uso para APIs Assíncronas
 
@@ -69,12 +69,12 @@ As mensagens enviadas devem seguir uma estrutura JSON consistente para garantir 
 
 ## Configuração de Fila e Tópico
 
-Para Redis e Kafka, a configuração de filas e tópicos deve ser consistente e planejada para suportar o escalonamento do sistema.
+Para RabbitMQ e Kafka, a configuração de filas e tópicos deve ser consistente e planejada para suportar o escalonamento do sistema.
 
-### Redis (Message Queue)
+### RabbitMQ (Message Queue)
 
 - **Nomes de Fila**: Defina nomes de fila que indiquem claramente o propósito. Exemplo: `orders_queue`, `notifications_queue`.
-- **Prioridade**: Redis pode ser configurado para processar mensagens em ordem FIFO (First-In-First-Out).
+- **Prioridade**: RabbitMQ pode ser configurado para processar mensagens em ordem FIFO (First-In-First-Out).
 - **TTL (Time to Live)**: Configure um tempo de vida para cada mensagem, caso necessário, para evitar filas com mensagens obsoletas.
 
 ### Kafka (Pub/Sub)
@@ -93,12 +93,12 @@ Para Redis e Kafka, a configuração de filas e tópicos deve ser consistente e 
 
 Para APIs assíncronas, diferentes métodos de comunicação são usados dependendo do middleware.
 
-### Redis
+### RabbitMQ
 
 - **LPUSH** e **BRPOP**: Para adicionar mensagens à fila e consumir mensagens de forma síncrona ou assíncrona.
-- **PUB/SUB**: Redis também suporta Pub/Sub básico, mas não mantém mensagens após serem consumidas, sendo ideal para notificações em tempo real.
+- **PUB/SUB**: RabbitMQ também suporta Pub/Sub básico, mas não mantém mensagens após serem consumidas, sendo ideal para notificações em tempo real.
 
-**Exemplo em Redis:**
+**Exemplo em RabbitMQ:**
 ```bash
 # Adicionando uma mensagem na fila
 LPUSH orders_queue '{"event":"order.created","timestamp":"2024-10-29T12:34:56Z","data":{"order_id":"7890"}}'
@@ -134,9 +134,9 @@ for message in consumer:
 
 Para rastrear mensagens e controlar o fluxo, inclua metadados e cabeçalhos específicos nas mensagens.
 
-### Redis
+### RabbitMQ
 
-Para Redis, os metadados são normalmente embutidos no corpo JSON.
+Para RabbitMQ, os metadados são normalmente embutidos no corpo JSON.
 
 ### Kafka
 
@@ -152,7 +152,7 @@ Kafka suporta cabeçalhos de mensagem, úteis para rastreamento e validação:
 
 1. **Padronize Estruturas de Mensagem**: Use uma estrutura JSON padronizada para cada tipo de evento.
 2. **Tolerância a Falhas e Retry**: Implemente lógica de retry para mensagens que falharem no processamento, com limite de tentativas.
-3. **Configuração de TTL**: Defina um tempo de vida para mensagens (especialmente em Redis), evitando o acúmulo de mensagens obsoletas.
+3. **Configuração de TTL**: Defina um tempo de vida para mensagens (especialmente em RabbitMQ), evitando o acúmulo de mensagens obsoletas.
 4. **Controle de Concurrency**: Configure consumidores em grupos para evitar duplicidade e permitir escalabilidade.
 5. **Registro e Monitoramento**: Registre todas as mensagens processadas e monitoramento de filas/tópicos para detectar anomalias.
 6. **Idempotência**: Garanta que o processamento das mensagens seja idempotente, ou seja, o mesmo evento pode ser processado mais de uma vez sem efeitos indesejados.
@@ -224,7 +224,7 @@ Toda a documentação das APIs assíncronas deve estar na pasta `docs` do projet
 
 ## Configuração de Fila e Tópicos
 
-- **Redis**:
+- **RabbitMQ**:
   - Fila: `orders_queue`
   - TTL: 1 hora
 
