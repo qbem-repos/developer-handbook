@@ -1,21 +1,29 @@
-# Configuração para o GitHub Pages
+# Configuração para GitHub Pages
 title: "Qbem Developer Handbook"
 description: "Documentação e práticas recomendadas para desenvolvedores da Qbem."
 url: "https://qbem-repos.github.io"
 baseurl: "/developer-handbook"
 
-# Tema do Jekyll
-theme: jekyll-theme-minimal
+# Tema remoto
+remote_theme: "daattali/beautiful-jekyll"
 
 # Caminho do logotipo
-header_pages:
-  - /assets/images/logo.webp
+logo: "/assets/images/logo.webp"
 
-# Outras configurações recomendadas para GitHub Pages
+# Plugins compatíveis com GitHub Pages
 plugins:
   - jekyll-feed
 
-# Configurações adicionais
+# Configurações adicionais para o tema Beautiful Jekyll
+author: Camilo
+show_excerpts: true
+show_footer_links: false
+footer_copyright: "© 2024 Qbem"
+social_networks:
+  - name: github
+    url: "https://github.com/qbem-repos"
+
+# Configuração de Markdown e Realce de Código
 markdown: kramdown
 highlighter: rouge
 
