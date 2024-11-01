@@ -1,5 +1,5 @@
 # Configuração para o GitHub Pages
-title: "Developer Handbook"
+title: "Qbem Developer Handbook"
 description: "Documentação e práticas recomendadas para desenvolvedores da Qbem."
 url: "https://qbem-repos.github.io"
 baseurl: "/developer-handbook"
@@ -18,10 +18,6 @@ plugins:
 # Configurações adicionais
 markdown: kramdown
 highlighter: rouge
-
-# SEO e Open Graph
-social_links:
-  - github_username: "qbem-repos"
 
 # Configuração de permalinks para URLs amigáveis
 permalink: pretty
