@@ -15,7 +15,7 @@ plugins:
   - jekyll-feed
 
 # Configurações adicionais para o tema Beautiful Jekyll
-author: Camilo
+author: Tecn
 show_excerpts: true
 show_footer_links: false
 footer_copyright: "© 2024 Qbem"

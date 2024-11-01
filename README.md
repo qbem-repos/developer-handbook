@@ -1,15 +1,18 @@
-Playbook para desenvolvedores novos e experientes da Qbem.
+📘 Guia de padrões e boas práticas de desenvolvimento da empresa.
 
-Index:
-1. [Arquitetura]()
-2. [Boas práticas](https://qbem-repos.github.io/developer-handbook/boas-praticas/boas-praticas)
-   - [Clean Code](https://qbem-repos.github.io/developer-handbook/boas-praticas/clean-code)
-   - [Object Calisthenics](https://qbem-repos.github.io/developer-handbook/boas-praticas)
-   - [Criação de pacotes e tookits](https://qbem-repos.github.io/developer-handbook/boas-praticasboas-praticas/package-best-pratices)
-   - [Test Driven Development](https://qbem-repos.github.io/developer-handbook/boas-praticas)
-   - [Defensive Development](https://qbem-repos.github.io/developer-handbook/boas-praticas)
-   - [Code Review](https://qbem-repos.github.io/developer-handbook/boas-praticas)
-   - [Sync vs Async](https://qbem-repos.github.io/developer-handbook/boas-praticas)
-4. [Local Development](https://qbem-repos.github.io/developer-handbook/boas-praticas)
-5. [Logging](https://qbem-repos.github.io/developer-handbook/boas-praticas)
-6. [Padrões para o Web APIs]()
+---
+
+## Índice
+
+- 🖥️ **[Web APIs](./pages/web_apis.md):** Padrões para construção e documentação de APIs Web.
+  
+- 🔄 **[Async APIs](./pages/async_apis.md):** Boas práticas para APIs assíncronas.
+
+- 📩 **[Webhooks](./pages/webhooks.md):** Diretrizes para uso de webhooks.
+
+- 🧹 **[Código Limpo](./pages/clean-code.md):** Princípios para escrever código claro e sustentável.
+
+- 🏷️ **[Domínio e Primitivas](./pages/domain_primitives.md):** Conceitos de modelagem de domínio.
+
+- 📦 **[Boas Práticas para Pacotes](./pages/package-best-pratices.md):** Recomendações para estrutura e manutenção de pacotes.
+
