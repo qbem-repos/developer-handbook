@@ -1,40 +1,43 @@
-# Diretrizes e Boas Práticas para Webhooks da QBem
+# 🚀 **Diretrizes e Boas Práticas para Webhooks da QBem**
 
-Este documento fornece orientações e melhores práticas para a implementação e uso de webhooks em projetos da QBem. Webhooks permitem que sistemas externos sejam notificados automaticamente sobre eventos relevantes, sem necessidade de consulta constante, promovendo integração em tempo real.
-
-## Índice
-- [Diretrizes e Boas Práticas para Webhooks da QBem](#diretrizes-e-boas-práticas-para-webhooks-da-qbem)
-  - [Índice](#índice)
-  - [Visão Geral](#visão-geral)
-  - [Estrutura e Payload do Webhook](#estrutura-e-payload-do-webhook)
-  - [URL de Webhook](#url-de-webhook)
-  - [Métodos HTTP e Códigos de Status](#métodos-http-e-códigos-de-status)
-  - [Cabeçalhos Customizados e Segurança](#cabeçalhos-customizados-e-segurança)
-    - [Cabeçalhos Customizados](#cabeçalhos-customizados)
-    - [Assinatura e Verificação](#assinatura-e-verificação)
-  - [Boas Práticas para Webhooks](#boas-práticas-para-webhooks)
-  - [Documentação e Exemplo de Payload](#documentação-e-exemplo-de-payload)
-    - [Estrutura da Pasta `docs`](#estrutura-da-pasta-docs)
-    - [Exemplo de `webhooks.md`](#exemplo-de-webhooksmd)
+Este documento descreve diretrizes e práticas recomendadas para a implementação e uso de webhooks em projetos da QBem. Webhooks notificam sistemas externos sobre eventos relevantes em tempo real, eliminando a necessidade de polling e promovendo integração eficiente e segura.
 
 ---
 
-## Visão Geral
+## **Índice**
 
-Webhooks são usados para enviar dados em tempo real de um sistema para outro. Quando um evento ocorre (como a criação de um novo usuário ou uma atualização de status), o sistema da QBem envia uma notificação para uma URL especificada pelo cliente ou sistema externo. 
+1. [Visão Geral](#visão-geral)
+2. [Estrutura e Payload do Webhook](#estrutura-e-payload-do-webhook)
+3. [URL de Webhook](#url-de-webhook)
+4. [Métodos HTTP e Códigos de Status](#métodos-http-e-códigos-de-status)
+5. [Cabeçalhos Customizados e Segurança](#cabeçalhos-customizados-e-segurança)
+   - [Cabeçalhos Customizados](#cabeçalhos-customizados)
+   - [Assinatura e Verificação](#assinatura-e-verificação)
+6. [Boas Práticas para Webhooks](#boas-práticas-para-webhooks)
+7. [Documentação e Exemplos](#documentação-e-exemplos)
+   - [Estrutura da Pasta `docs`](#estrutura-da-pasta-docs)
+   - [Exemplo de `webhooks.md`](#exemplo-de-webhooksmd)
 
-Exemplos de eventos que podem acionar webhooks:
-- Criação de um novo recurso
-- Atualização de um status
-- Exclusão de um recurso
+---
+
+## 🌍 **Visão Geral**
+
+Webhooks enviam dados estruturados para sistemas externos sempre que um evento ocorre no sistema da QBem. Eles suportam comunicação em tempo real, permitindo que clientes e serviços sejam notificados automaticamente sobre mudanças importantes.
+
+**Exemplos de Eventos:**
+- Criação de novos usuários.
+- Atualizações de status em pedidos.
+- Exclusão de recursos específicos.
 
 [Voltar ao Índice](#índice)
 
-## Estrutura e Payload do Webhook
+---
 
-Os webhooks da QBem enviam **dados estruturados em JSON** com informações sobre o evento que ocorreu. A estrutura do payload deve ser clara e descritiva, facilitando a interpretação dos dados pelo sistema receptor.
+## 🛠️ **Estrutura e Payload do Webhook**
 
-**Exemplo de Payload:**
+Webhooks enviam dados em **JSON** com detalhes do evento que ocorreu. O payload deve ser claro, descritivo e padronizado para garantir facilidade de integração.
+
+### **Exemplo de Payload**
 ```json
 {
   "event": "user.created",
@@ -48,106 +51,141 @@ Os webhooks da QBem enviam **dados estruturados em JSON** com informações sobr
 }
 ```
 
-**Campos recomendados:**
-- **event**: Nome único do evento (e.g., `user.created`, `user.updated`).
+### **Campos Recomendados**
+- **event**: Identificador único do evento (e.g., `user.created`, `order.updated`).
 - **timestamp**: Data e hora do evento em formato ISO 8601.
-- **data**: Objeto contendo os detalhes específicos do evento.
+- **data**: Detalhes específicos do evento (customizáveis por evento).
+
+**Nota:** Evite incluir dados sensíveis no payload.
 
 [Voltar ao Índice](#índice)
 
-## URL de Webhook
+---
 
-A URL de webhook é fornecida pelo sistema externo que deseja receber notificações. Esta URL deve estar configurada para lidar corretamente com as requisições enviadas pela QBem.
+## 🌐 **URL de Webhook**
 
-- **HTTPS** é obrigatório para proteger a comunicação.
-- As URLs devem ser exclusivas por evento, se necessário, para melhor organização e manuseio.
+A URL de webhook é fornecida pelo sistema receptor e deve atender aos seguintes requisitos:
 
-**Exemplo de URL de Webhook:**
+1. **HTTPS obrigatório**: Todas as comunicações devem ser criptografadas para proteger os dados.
+2. **Resiliência**: A URL deve estar preparada para lidar com falhas temporárias.
+3. **Compatibilidade**: Deve aceitar requisições HTTP `POST` com payload JSON.
+
+**Exemplo de URL de Webhook**:
 ```plaintext
-https://webhooks.external-system.com/qbem/user-events
+https://webhooks.external-system.com/qbem/events
 ```
+
+### **Melhores Práticas**
+- Utilize URLs exclusivas por tipo de evento para simplificar o processamento.
+- Realize verificações de permissões e autenticação na URL para garantir que apenas webhooks autorizados sejam aceitos.
 
 [Voltar ao Índice](#índice)
 
-## Métodos HTTP e Códigos de Status
+---
 
-O método **POST** é o padrão para o envio de webhooks. O código de status HTTP da resposta indica se o webhook foi recebido com sucesso.
+## 🔄 **Métodos HTTP e Códigos de Status**
 
-- **POST**: Envia o payload JSON para a URL do webhook.
+### **Método HTTP**
+- **POST**: O webhook envia o payload JSON para a URL configurada.
 
-**Códigos de Status de Resposta:**
+### **Códigos de Status**
 - **200 OK**: Indica que o webhook foi recebido e processado com sucesso.
-- **4xx (400, 404)**: Erro do cliente, como URL inválida ou endpoint inexistente.
-- **5xx (500)**: Erro no servidor receptor. A QBem deve implementar lógica de reenvio para falhas temporárias.
+- **400 Bad Request**: Problemas no payload ou URL malformada.
+- **404 Not Found**: Endpoint não encontrado no receptor.
+- **5xx (500, 503)**: Erro temporário no servidor receptor.
 
-**Reenvio de Webhook**: Caso o webhook retorne um código 5xx, a QBem deve tentar reenviar a notificação com intervalos exponenciais de tempo, limitando o número de tentativas para evitar sobrecarga.
+### **Reenvio de Webhook**
+- Implementar **retry automático** com intervalos exponenciais em caso de erros temporários (5xx). 
+- Definir um número máximo de tentativas (e.g., 5 tentativas).
+
+**Estratégia de Retry:**
+1. Tentar novamente após 10 segundos.
+2. Dobrar o intervalo em cada tentativa subsequente.
+3. Encerrar após o número máximo de tentativas.
 
 [Voltar ao Índice](#índice)
 
-## Cabeçalhos Customizados e Segurança
+---
 
-Para garantir a segurança dos webhooks, é recomendado incluir cabeçalhos personalizados e autenticação.
+## 🔒 **Cabeçalhos Customizados e Segurança**
 
-### Cabeçalhos Customizados
+### **Cabeçalhos Customizados**
 
-1. **X-QBem-Event**: Nome do evento, como `user.created`.
-2. **X-QBem-Signature**: Assinatura HMAC do payload para verificar a autenticidade do webhook.
-3. **X-QBem-Timestamp**: Timestamp em que o webhook foi enviado, para prevenir ataques de repetição (replay attacks).
+Adicione cabeçalhos específicos para rastreamento e autenticação do webhook:
 
-**Exemplo de Cabeçalhos Customizados:**
-```http
-X-QBem-Event: user.created
-X-QBem-Signature: sha256=abcdef1234567890
-X-QBem-Timestamp: 2024-10-29T12:34:56Z
+- **X-QBem-Event**: Nome do evento enviado.
+- **X-QBem-Signature**: Assinatura HMAC para validar a integridade do payload.
+- **X-QBem-Timestamp**: Hora do envio, usado para prevenir ataques de repetição.
+
+### **Assinatura e Verificação**
+
+A assinatura HMAC permite que o receptor valide a origem do webhook.
+
+#### **Como Funciona**
+1. QBem gera uma assinatura usando HMAC-SHA256.
+2. A chave secreta é compartilhada entre QBem e o receptor.
+3. O receptor recria a assinatura localmente e a compara com o valor recebido.
+
+#### **Exemplo de Verificação em Python**
+```python
+import hmac
+import hashlib
+
+# Dados para verificação
+secret = b'shared-secret'
+payload = b'{"event":"user.created", ...}'  # Corpo recebido
+signature = "sha256=abcdef1234567890"
+
+# Gerar assinatura localmente
+local_signature = 'sha256=' + hmac.new(secret, payload, hashlib.sha256).hexdigest()
+
+# Validar assinatura
+if hmac.compare_digest(local_signature, signature):
+    print("Assinatura válida!")
+else:
+    print("Assinatura inválida!")
 ```
 
-### Assinatura e Verificação
+[Voltar ao Índice](#índice)
 
-A assinatura (usando HMAC-SHA256) permite que o receptor verifique a autenticidade da requisição. A chave de assinatura é compartilhada apenas entre a QBem e o sistema receptor.
+---
 
-**Verificação de Assinatura no Receptor:**
-1. Construa um hash HMAC-SHA256 com a chave secreta e o payload recebido.
-2. Compare a assinatura gerada com o valor do cabeçalho `X-QBem-Signature`.
+## ✅ **Boas Práticas para Webhooks**
+
+1. **HTTPS Obrigatório**: Nunca use URLs não criptografadas.
+2. **Timeouts e Retries**: Configure um timeout (e.g., 5 segundos) e implemente lógica de retries com backoff exponencial.
+3. **Validação de Assinatura**: Sempre valide a assinatura para evitar acesso não autorizado.
+4. **Idempotência**: Certifique-se de que eventos repetidos não causem efeitos indesejados.
+5. **Registre Logs**: Mantenha registros detalhados dos webhooks enviados, respostas recebidas e falhas.
+6. **Controle de Eventos**: Permita que os receptores escolham quais eventos desejam receber.
+7. **Envio em Lote (Opcional)**: Para alta frequência de eventos, considere agrupar notificações para reduzir tráfego.
 
 [Voltar ao Índice](#índice)
 
-## Boas Práticas para Webhooks
+---
 
-1. **HTTPS Obrigatório**: Sempre use HTTPS para proteger os dados em trânsito.
-2. **Tolerância a Falhas**: Implemente lógica de reenvio com intervalos exponenciais para tentativas, evitando sobrecarga do receptor.
-3. **Validação de Assinatura**: Sempre verifique a assinatura do webhook para garantir a autenticidade dos dados recebidos.
-4. **Evite Looping de Eventos**: Verifique no sistema receptor se um evento já foi processado para evitar duplicação.
-5. **Timeouts e Retries**: Defina um tempo limite para a resposta do webhook (ex.: 5 segundos) e uma lógica de reenvio com limite de tentativas.
-6. **Registro de Logs**: Registre os webhooks enviados e as respostas recebidas para auditoria e troubleshooting.
-7. **Configuração de Filtros**: Permita que o receptor selecione os eventos que deseja receber, evitando o envio de dados irrelevantes.
+## 📚 **Documentação e Exemplos**
 
-[Voltar ao Índice](#índice)
+Mantenha uma documentação clara e acessível sobre os webhooks disponíveis.
 
-## Documentação e Exemplo de Payload
-
-Toda a documentação dos webhooks deve estar disponível na pasta `docs` do projeto. A documentação deve incluir:
-
-1. **Arquivo `webhooks.md`**: Documento contendo a descrição de todos os eventos suportados e suas estruturas de payload.
-2. **Arquivo `webhook_requests.http`**: Exemplo de chamadas HTTP simulando envios de webhook para teste.
-3. **Postman Collection**: Uma coleção do Postman com exemplos de payloads e chamadas de webhook para facilitar o teste e validação dos endpoints receptores.
-
-### Estrutura da Pasta `docs`
+### **Estrutura da Pasta `docs`**
 
 ```
 /docs
- ├── webhooks.md               # Documentação dos eventos e estrutura de payloads
- ├── webhook_requests.http      # Exemplo de requisições HTTP de webhooks
+ ├── webhooks.md               # Descrição dos eventos e estrutura de payloads
+ ├── webhook_requests.http      # Exemplos de requisições HTTP de webhooks
  └── postman_collection.json    # Coleção do Postman para testes de webhooks
 ```
 
-### Exemplo de `webhooks.md`
+### **Exemplo de `webhooks.md`**
 
 ```markdown
 # Documentação de Webhooks da QBem
 
 ## Eventos Suportados
 
-1. **user.created** - Evento disparado quando um novo usuário é criado.
+1. **user.created**
+   - **Descrição**: Disparado quando um novo usuário é criado.
    - **Payload**:
      ```json
      {
@@ -162,7 +200,8 @@ Toda a documentação dos webhooks deve estar disponível na pasta `docs` do pro
      }
      ```
 
-2. **user.updated** - Evento disparado quando um usuário é atualizado.
+2. **user.updated**
+   - **Descrição**: Disparado quando um usuário é atualizado.
    - **Payload**:
      ```json
      {
@@ -175,15 +214,10 @@ Toda a documentação dos webhooks deve estar disponível na pasta `docs` do pro
      }
      ```
 
-## Cabeçalhos de Segurança
-
-- **X-QBem-Event**
-- **X-QBem-Signature**
-- **X-QBem-Timestamp**
-
 ## Testando Webhooks
 
-Use o arquivo `webhook_requests.http` para simular requisições e validar a implementação.
+- Use o arquivo `webhook_requests.http` para simular chamadas.
+- A coleção `postman_collection.json` fornece exemplos prontos para testes no Postman.
 ```
 
 [Voltar ao Índice](#índice)
