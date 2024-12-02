@@ -1,35 +1,34 @@
-# 🚀 Diretrizes e Boas Práticas para APIs da QBem
+# 🚀 **Diretrizes e Boas Práticas para APIs da QBem**
 
-Este documento apresenta as diretrizes e boas práticas para o desenvolvimento de APIs da QBem, com foco em APIs RESTful e Search Engine (Typesense), garantindo uma experiência de desenvolvedor (DX) positiva e APIs consistentes e seguras.
-
-## Índice
-1. [Idioma Padrão](#idioma-padrão)
-2. [APIs RESTful](#apis-restful)
-   - [URLs RESTful](#urls-restful)
-   - [Métodos HTTP](#métodos-http)
-   - [Códigos de Status](#códigos-de-status)
-   - [Metadados e Cabeçalhos](#metadados-e-cabeçalhos)
-   - [Versionamento](#versionamento)
-3. [APIs de Search Engine (Typesense)](#apis-de-search-engine-typesense)
-   - [URLs para Busca](#urls-para-busca)
-   - [Filtros e Parâmetros de Consulta](#filtros-e-parâmetros-de-consulta)
-   - [Cabeçalhos e Boas Práticas](#cabeçalhos-e-boas-práticas)
-4. [Segurança 🔒](#boas-práticas-de-segurança)
-5. [Documentação 📚](#documentação-da-api)
-6. [Autenticação 🛡️](#autenticação-com-bearer-token)
+Este documento estabelece diretrizes e práticas recomendadas para o desenvolvimento e consumo das APIs da QBem, incluindo **APIs RESTful** e **Search Engine (Typesense)**. Ele foca na criação de APIs intuitivas, seguras e consistentes, com uma experiência de desenvolvedor (DX) positiva.
 
 ---
 
-## 🌍 Idioma Padrão
+## **Índice**
 
-Todas as **mensagens e respostas** devem ser em **inglês** para garantir a consistência e a acessibilidade internacional.
+1. [Idioma Padrão](#idioma-padrão)
+2. [APIs RESTful](#apis-restful)
+   - [Estrutura de URLs](#estrutura-de-urls)
+   - [Métodos HTTP](#métodos-http)
+   - [Códigos de Status HTTP](#códigos-de-status-http)
+   - [Cabeçalhos e Metadados](#cabeçalhos-e-metadados)
+   - [Versionamento](#versionamento)
+3. [APIs de Search Engine (Typesense)](#apis-de-search-engine-typesense)
+   - [Estrutura de URLs para Busca](#estrutura-de-urls-para-busca)
+   - [Parâmetros de Consulta](#parâmetros-de-consulta)
+   - [Cabeçalhos e Boas Práticas](#cabeçalhos-e-boas-práticas)
+4. [Segurança 🔒](#segurança)
+5. [Documentação 📚](#documentação)
+6. [Autenticação 🛡️](#autenticação)
 
-**Exemplo de Endpoint:**
-```http
-GET http://api.qbem.net.br/v1/operators
-```
+---
 
-**Exemplo de Erro:**
+## 🌍 **Idioma Padrão**
+
+- **Padrão**: Toda comunicação deve ser em **inglês**, incluindo mensagens de erro e campos de respostas.
+- **Racional**: Garante acessibilidade global e consistência em ambientes internacionais.
+
+**Exemplo de Resposta de Erro**:
 ```json
 {
   "error": "Invalid request parameter",
@@ -41,166 +40,180 @@ GET http://api.qbem.net.br/v1/operators
 
 ---
 
-## 🛠️ APIs RESTful
+## 🛠️ **APIs RESTful**
 
-As APIs RESTful devem ser simples, claras e consistentes.
+As APIs RESTful devem ser projetadas para serem simples, previsíveis e consistentes, seguindo os princípios REST.
 
-### 📍 URLs RESTful
+### 📍 **Estrutura de URLs**
 
-1. **Use substantivos, não verbos**: Exemplo: `/operators`, não `/getOperators`.
-2. **Nomes no plural**: Exemplo: `/operators`.
-3. **Hierarquia de recursos simples**: Evite URLs muito aninhadas.
-4. **Versão na URL**: Exemplo: `http://api.qbem.net.br/v1/operators`.
+- **Use substantivos no plural**: Evite verbos. Exemplo: `/operators`, não `/getOperators`.
+- **Mantenha hierarquia clara**: Exemplo: `/operators/{operator_id}/tasks`.
+- **Inclua a versão na URL**: Facilita o gerenciamento de versões. Exemplo: `/v1`.
 
-**Exemplo de URLs:**
-
+**Exemplo de Endpoints:**
 - Listar Operadoras:
   ```http
   GET http://api.qbem.net.br/v1/operators
   ```
-- Filtrar por data e status:
+- Detalhar uma Operadora:
   ```http
-  GET http://api.qbem.net.br/v1/operators?created_at=2011&active=true
+  GET http://api.qbem.net.br/v1/operators/{operator_id}
   ```
 
-### 🔧 Métodos HTTP
+### 🔧 **Métodos HTTP**
 
-- **POST**: Criar (`POST /operators`)
-- **GET**: Ler (`GET /operators`)
-- **PUT**: Atualizar (`PUT /operators/1234`)
-- **DELETE**: Excluir (`DELETE /operators/1234`)
+Cada método HTTP deve representar a ação correspondente no recurso:
 
-### 🏷️ Códigos de Status
+| Método  | Descrição                  | Exemplo                      |
+|---------|----------------------------|------------------------------|
+| `GET`   | Ler recursos               | `/operators`                 |
+| `POST`  | Criar um novo recurso      | `/operators`                 |
+| `PUT`   | Atualizar recurso (completo) | `/operators/{operator_id}`   |
+| `PATCH` | Atualizar recurso (parcial) | `/operators/{operator_id}`   |
+| `DELETE`| Excluir recurso            | `/operators/{operator_id}`   |
 
-| Código | Descrição           |
-|--------|---------------------|
-| 200    | OK                  |
-| 201    | Created             |
-| 400    | Bad Request         |
-| 404    | Not Found           |
-| 500    | Internal Server Error|
+### 🏷️ **Códigos de Status HTTP**
 
-### 🛠️ Metadados e Cabeçalhos
+Utilize códigos de status padronizados para comunicar o resultado das operações:
 
-- **X-Request-Id**: ID único da requisição (UUIDv4).
-- **X-Content-Size**: Número total de itens (para paginação).
+| Código | Descrição                     |
+|--------|-------------------------------|
+| 200    | Sucesso (requisição OK)       |
+| 201    | Recurso criado                |
+| 204    | Sem conteúdo                  |
+| 400    | Erro de requisição (cliente)  |
+| 401    | Não autorizado                |
+| 403    | Proibido                      |
+| 404    | Não encontrado                |
+| 500    | Erro no servidor              |
 
-### 🔄 Versionamento
+### 🛠️ **Cabeçalhos e Metadados**
 
-- **Na URL**: `http://api.qbem.net.br/v1/operators`
-- **No Cabeçalho**: `X-API-Version: v1`
+- **X-Request-Id**: ID único para rastrear a requisição.
+- **X-Content-Size**: Tamanho total da resposta (útil em paginação).
+- **Content-Type**: Sempre inclua `application/json` para respostas JSON.
+
+### 🔄 **Versionamento**
+
+Utilize versionamento explícito para evitar quebra de compatibilidade em mudanças:
+
+- **Na URL**: `/v1/operators`
+- **Nos Cabeçalhos** (opcional): `X-API-Version: 1`
 
 [Voltar ao Índice](#índice)
 
 ---
 
-## 🔍 APIs de Search Engine (Typesense)
+## 🔍 **APIs de Search Engine (Typesense)**
 
-As APIs de Search Engine utilizam Typesense para buscas rápidas.
+APIs de Search Engine utilizam o Typesense para oferecer buscas rápidas e eficientes.
 
-### 📍 URLs para Busca
+### 📍 **Estrutura de URLs para Busca**
 
-- **Busca em coleções**: `/collections/{collection}/documents/search`
-- **Operações com documentos**: Adicionar, atualizar ou excluir documentos.
+- **Busca em coleções**: Utilize o endpoint `/collections/{collection}/documents/search` para consultas.
+- **Operações com documentos**: Adicione, atualize ou exclua documentos diretamente nas coleções.
 
-**Exemplos de URLs:**
+**Exemplo de Busca com Filtro**:
+```http
+GET http://search.qbem.net.br/v1/collections/operators/documents/search?query_by=name&filter_by=active:true
+```
 
-- Buscar com filtro:
-  ```http
-  GET http://search.qbem.net.br/v1/collections/operators/documents/search?filter_by=active:true
-  ```
+### 🔍 **Parâmetros de Consulta**
 
-### 🔍 Filtros e Parâmetros
+- **query_by**: Campos que serão utilizados para a busca.
+- **filter_by**: Condições para filtrar os resultados. Exemplo: `filter_by=active:true`.
+- **sort_by**: Ordenação dos resultados. Exemplo: `sort_by=created_at:desc`.
 
-- **filter_by**: Filtro condicional. Exemplo: `filter_by=created_at:>2020`.
-- **sort_by**: Ordenação. Exemplo: `sort_by=name:desc`.
-
-**Exemplo de Busca Completa:**
+**Exemplo Completo de Busca**:
 ```http
 GET http://search.qbem.net.br/v1/collections/operators/documents/search?query_by=name&filter_by=active:true&sort_by=created_at:desc
 ```
 
-### 📊 Cabeçalhos e Boas Práticas
+### 📊 **Cabeçalhos e Boas Práticas**
 
-- **X-Search-Request-Id**: ID único para rastreamento.
-- **X-Result-Count**: Contagem de resultados.
-
-[Voltar ao Índice](#índice)
-
----
-
-## 🔒 Boas Práticas de Segurança
-
-- **OAuth 2.0 ou JWT**: Para autenticação e autorização.
-- **Rate Limiting**: Limite de requisições por IP.
-- **Sanitização de Entrada**: Proteção contra injeção de código.
-- **HTTPS**: Todas as requisições devem ser feitas via HTTPS.
+- **X-Search-Request-Id**: ID único da requisição para auditoria.
+- **X-Result-Count**: Número total de resultados encontrados.
 
 [Voltar ao Índice](#índice)
 
 ---
 
-## 📚 Documentação da API
+## 🔒 **Segurança**
 
-Toda a documentação deve estar na pasta `docs`, com exemplos de requisições e respostas.
+- **Autenticação**: Utilize OAuth 2.0 ou JWT para validar e autorizar requisições.
+- **HTTPS**: Todas as APIs devem operar exclusivamente sobre HTTPS.
+- **Rate Limiting**: Implemente limites de requisição por IP para evitar abusos.
+- **Sanitização**: Filtre e valide entradas para evitar injeções de código ou dados maliciosos.
 
-### 🗂️ Estrutura da Pasta `docs`
+[Voltar ao Índice](#índice)
+
+---
+
+## 📚 **Documentação**
+
+Documente suas APIs de forma clara e detalhada, fornecendo exemplos para desenvolvedores.
+
+### 🗂️ **Estrutura Recomendada**
 
 ```
 /docs
- ├── requests.http               # Exemplos de requisições
- ├── postman_collection.json      # Coleção para Postman
- └── README.md                    # Instruções de uso
+ ├── api_reference.md           # Referência técnica das APIs
+ ├── requests.http              # Exemplos de chamadas HTTP
+ ├── postman_collection.json    # Coleção do Postman para testes
+ └── README.md                  # Guia de introdução
 ```
 
-### 💡 Boas Práticas para a Documentação
+### 💡 **Boas Práticas para Documentação**
 
-- Mantenha exemplos atualizados.
-- Seja consistente no formato de endpoints.
+1. Inclua exemplos reais de entrada e saída para cada endpoint.
+2. Documente erros comuns e como solucioná-los.
+3. Mantenha a documentação atualizada com cada mudança na API.
 
 [Voltar ao Índice](#índice)
 
 ---
 
-## 🛡️ Autenticação com Bearer Token
+## 🛡️ **Autenticação**
 
-### Passo 1: Obter o Bearer Token
+### Passo 1: Obtenha um Token
 
+Use um fluxo de autenticação como OAuth 2.0 ou JWT.
+
+**Exemplo de Obtenção de Token**:
 ```http
-POST https://<casdoor-domain>/api/login
-```
+POST https://auth.qbem.net.br/oauth/token
+Content-Type: application/json
 
-**Corpo da Requisição**:
-```json
 {
-  "username": "your-username",
-  "password": "your-password",
   "client_id": "your-client-id",
   "client_secret": "your-client-secret",
-  "grant_type": "password"
+  "grant_type": "password",
+  "username": "your-username",
+  "password": "your-password"
 }
 ```
 
-**Resposta de Sucesso**:
+**Resposta**:
 ```json
 {
-  "access_token": "your-bearer-token",
+  "access_token": "your-access-token",
   "token_type": "Bearer",
   "expires_in": 3600
 }
 ```
 
-### Passo 2: Configurar o Token nas Requisições
+### Passo 2: Inclua o Token nas Requisições
 
-**Cabeçalho de Autorização**:
+Todas as requisições autenticadas devem incluir o cabeçalho `Authorization`:
+
 ```http
-Authorization: Bearer your-bearer-token
+Authorization: Bearer your-access-token
 ```
 
-**Exemplo de Chamada Autenticada**:
+**Exemplo**:
 ```http
 GET http://api.qbem.net.br/v1/operators
-Authorization: Bearer your-bearer-token
+Authorization: Bearer your-access-token
 ```
 
 [Voltar ao Índice](#índice)
