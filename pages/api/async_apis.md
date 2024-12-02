@@ -1,46 +1,50 @@
-# Diretrizes e Boas Práticas para APIs Assíncronas da QBem
+# **Diretrizes e Boas Práticas para APIs Assíncronas da QBem**
 
-Este documento fornece orientações e melhores práticas para a implementação e uso de APIs assíncronas na QBem, utilizando **MQ (RabbitMQ)** e **Pub/Sub (Kafka)**. As APIs assíncronas permitem a comunicação entre serviços em tempo real, promovendo um sistema escalável e eficiente.
-
-## Índice
-- [Diretrizes e Boas Práticas para APIs Assíncronas da QBem](#diretrizes-e-boas-práticas-para-apis-assíncronas-da-qbem)
-  - [Índice](#índice)
-  - [Visão Geral](#visão-geral)
-    - [Casos de Uso para APIs Assíncronas](#casos-de-uso-para-apis-assíncronas)
-  - [Estrutura de Mensagens](#estrutura-de-mensagens)
-  - [Configuração de Fila e Tópico](#configuração-de-fila-e-tópico)
-    - [RabbitMQ (Message Queue)](#rabbitmq-message-queue)
-    - [Kafka (Pub/Sub)](#kafka-pubsub)
-  - [Métodos de Comunicação](#métodos-de-comunicação)
-    - [RabbitMQ](#rabbitmq)
-    - [Kafka](#kafka)
-  - [Cabeçalhos e Metadados](#cabeçalhos-e-metadados)
-    - [RabbitMQ](#rabbitmq-1)
-    - [Kafka](#kafka-1)
-  - [Boas Práticas para APIs Assíncronas](#boas-práticas-para-apis-assíncronas)
-  - [Documentação e Exemplo de Mensagens](#documentação-e-exemplo-de-mensagens)
-    - [Estrutura da Pasta `docs`](#estrutura-da-pasta-docs)
-    - [Exemplo de `async_apis.md`](#exemplo-de-async_apismd)
+Este documento fornece orientações detalhadas e melhores práticas para a implementação de APIs assíncronas na QBem, utilizando **Message Queues (RabbitMQ)** e **Pub/Sub (Kafka)**. Estas APIs permitem comunicação eficiente entre serviços em tempo real, garantindo escalabilidade, resiliência e desempenho.
 
 ---
 
-## Visão Geral
+## **Índice**
 
-As APIs assíncronas na QBem utilizam RabbitMQ e Kafka para o envio e recebimento de mensagens entre serviços. O RabbitMQ é utilizado para filas de mensagens (Message Queue), enquanto o Kafka gerencia a comunicação baseada em tópicos (Pub/Sub), sendo ideal para a transmissão de dados em larga escala e baixa latência.
+1. [Visão Geral](#visão-geral)
+   - [Casos de Uso para APIs Assíncronas](#casos-de-uso-para-apis-assíncronas)
+2. [Estrutura de Mensagens](#estrutura-de-mensagens)
+3. [Configuração de Filas e Tópicos](#configuração-de-filas-e-tópicos)
+   - [RabbitMQ (Message Queue)](#rabbitmq-message-queue)
+   - [Kafka (Pub/Sub)](#kafka-pubsub)
+4. [Métodos de Comunicação](#métodos-de-comunicação)
+   - [RabbitMQ](#rabbitmq)
+   - [Kafka](#kafka)
+5. [Cabeçalhos e Metadados](#cabeçalhos-e-metadados)
+   - [RabbitMQ](#rabbitmq-1)
+   - [Kafka](#kafka-1)
+6. [Boas Práticas para APIs Assíncronas](#boas-práticas-para-apis-assíncronas)
+7. [Documentação e Exemplo de Mensagens](#documentação-e-exemplo-de-mensagens)
+   - [Estrutura da Pasta `docs`](#estrutura-da-pasta-docs)
+   - [Exemplo de Arquivo `async_apis.md`](#exemplo-de-arquivo-async_apismd)
 
-### Casos de Uso para APIs Assíncronas
+---
 
-- Processamento de grandes volumes de dados.
-- Notificações em tempo real e atualizações de estado.
-- Sistemas que exigem desacoplamento entre produtores e consumidores.
+## **1. Visão Geral**
+
+As APIs assíncronas da QBem utilizam **RabbitMQ** para processamento baseado em filas e **Kafka** para comunicação baseada em tópicos. Esses sistemas garantem uma comunicação robusta, permitindo que os serviços sejam escalados e desacoplados.
+
+### **Casos de Uso para APIs Assíncronas**
+
+- **Processamento de Dados em Massa**: Ideal para serviços que processam grandes volumes de eventos, como logs ou atualizações em lote.
+- **Notificações em Tempo Real**: Envio de notificações e atualizações de status entre serviços ou para clientes finais.
+- **Desacoplamento de Serviços**: Isola produtores e consumidores para maior resiliência e flexibilidade na arquitetura.
 
 [Voltar ao Índice](#índice)
 
-## Estrutura de Mensagens
+---
 
-As mensagens enviadas devem seguir uma estrutura JSON consistente para garantir que os dados possam ser facilmente consumidos e processados.
+## **2. Estrutura de Mensagens**
 
-**Exemplo de Estrutura de Mensagem:**
+Todas as mensagens devem ser padronizadas no formato JSON para facilitar a integração entre serviços.
+
+### **Exemplo de Estrutura de Mensagem**
+
 ```json
 {
   "event": "order.created",
@@ -60,69 +64,76 @@ As mensagens enviadas devem seguir uma estrutura JSON consistente para garantir 
 }
 ```
 
-**Campos recomendados:**
-- **event**: Nome único do evento (e.g., `order.created`, `order.updated`).
+### **Campos Recomendados**
+
+- **event**: Identificador único do tipo de evento (e.g., `order.created`, `user.updated`).
 - **timestamp**: Data e hora do evento no formato ISO 8601.
-- **data**: Objeto contendo detalhes do evento, específico para cada tipo.
+- **data**: Objeto JSON com os detalhes específicos do evento.
 
 [Voltar ao Índice](#índice)
 
-## Configuração de Fila e Tópico
+---
 
-Para RabbitMQ e Kafka, a configuração de filas e tópicos deve ser consistente e planejada para suportar o escalonamento do sistema.
+## **3. Configuração de Filas e Tópicos**
 
-### RabbitMQ (Message Queue)
+Configurações claras de filas e tópicos garantem melhor gerenciamento e desempenho do sistema.
 
-- **Nomes de Fila**: Defina nomes de fila que indiquem claramente o propósito. Exemplo: `orders_queue`, `notifications_queue`.
-- **Prioridade**: RabbitMQ pode ser configurado para processar mensagens em ordem FIFO (First-In-First-Out).
-- **TTL (Time to Live)**: Configure um tempo de vida para cada mensagem, caso necessário, para evitar filas com mensagens obsoletas.
+### **RabbitMQ (Message Queue)**
 
-### Kafka (Pub/Sub)
+- **Nomes de Fila**:
+  - Utilize nomes descritivos, como `orders_queue` ou `notifications_queue`.
+- **Prioridade**:
+  - Configure filas com base em prioridade para mensagens críticas.
+- **TTL (Time to Live)**:
+  - Estabeleça tempos de vida para mensagens, reduzindo acúmulo de dados desnecessários.
 
-- **Tópicos**: Crie tópicos segmentados por tipo de evento. Exemplo: `orders`, `notifications`.
-- **Partições**: Configure múltiplas partições para permitir paralelismo e melhor desempenho.
-- **Replicação**: Configure réplicas para tolerância a falhas, garantindo disponibilidade em caso de falha de um nó.
+### **Kafka (Pub/Sub)**
 
-**Exemplo de Tópicos para Kafka:**
-- `orders`: Para eventos relacionados a pedidos (e.g., `order.created`, `order.updated`).
-- `users`: Para eventos relacionados a usuários (e.g., `user.registered`, `user.deleted`).
+- **Tópicos**:
+  - Crie tópicos específicos por domínio de eventos (e.g., `orders`, `users`).
+- **Partições**:
+  - Aumente o paralelismo configurando múltiplas partições.
+- **Replicação**:
+  - Defina réplicas para tolerância a falhas.
 
 [Voltar ao Índice](#índice)
 
-## Métodos de Comunicação
+---
 
-Para APIs assíncronas, diferentes métodos de comunicação são usados dependendo do middleware.
+## **4. Métodos de Comunicação**
 
-### RabbitMQ
+### **RabbitMQ**
 
-- **LPUSH** e **BRPOP**: Para adicionar mensagens à fila e consumir mensagens de forma síncrona ou assíncrona.
-- **PUB/SUB**: RabbitMQ também suporta Pub/Sub básico, mas não mantém mensagens após serem consumidas, sendo ideal para notificações em tempo real.
+- **LPUSH/BRPOP**: Inserção e consumo de mensagens síncronas ou assíncronas.
+- **Pub/Sub**: Suporte básico para notificações em tempo real.
 
-**Exemplo em RabbitMQ:**
+**Exemplo de Inserção e Consumo:**
+
 ```bash
-# Adicionando uma mensagem na fila
-LPUSH orders_queue '{"event":"order.created","timestamp":"2024-10-29T12:34:56Z","data":{"order_id":"7890"}}'
+# Adicionar mensagem na fila
+LPUSH orders_queue '{"event":"order.created","timestamp":"2024-10-29T12:34:56Z"}'
 
-# Consumindo uma mensagem da fila
+# Consumir mensagem da fila
 BRPOP orders_queue 0
 ```
 
-### Kafka
+### **Kafka**
 
-- **Produtores**: Enviam mensagens a um tópico específico.
-- **Consumidores**: Consomem mensagens de tópicos de acordo com o grupo ao qual pertencem. Os consumidores em um grupo específico consomem cada mensagem uma vez, evitando duplicações.
-- **Offset**: O Kafka permite que consumidores retomem de onde pararam, garantindo que nenhuma mensagem seja perdida.
+- **Produtores**: Enviam mensagens para tópicos específicos.
+- **Consumidores**: Consomem mensagens de acordo com o grupo de consumidores.
+- **Offsets**: Rastreiam a posição de leitura de cada consumidor.
 
-**Exemplo de Código com Kafka em Python:**
+**Exemplo em Python:**
+
 ```python
 from kafka import KafkaProducer, KafkaConsumer
 
-# Enviar mensagem (produtor)
+# Produção
 producer = KafkaProducer(bootstrap_servers='localhost:9092')
-producer.send('orders', b'{"event":"order.created","timestamp":"2024-10-29T12:34:56Z","data":{"order_id":"7890"}}')
+producer.send('orders', b'{"event":"order.created"}')
 producer.close()
 
-# Consumir mensagem (consumidor)
+# Consumo
 consumer = KafkaConsumer('orders', group_id='order_processors', bootstrap_servers='localhost:9092')
 for message in consumer:
     print(message.value)
@@ -130,113 +141,93 @@ for message in consumer:
 
 [Voltar ao Índice](#índice)
 
-## Cabeçalhos e Metadados
+---
 
-Para rastrear mensagens e controlar o fluxo, inclua metadados e cabeçalhos específicos nas mensagens.
+## **5. Cabeçalhos e Metadados**
 
-### RabbitMQ
+### **RabbitMQ**
 
-Para RabbitMQ, os metadados são normalmente embutidos no corpo JSON.
+- Metadados devem ser incluídos no corpo JSON das mensagens.
 
-### Kafka
+### **Kafka**
 
-Kafka suporta cabeçalhos de mensagem, úteis para rastreamento e validação:
-
-- **X-Request-Id**: ID exclusivo da mensagem para rastreamento.
-- **X-Timestamp**: Timestamp da mensagem para auditoria.
-- **X-Retry-Count**: Contador de tentativas de processamento para implementar lógica de reenvio ou descarte de mensagens.
-
-[Voltar ao Índice](#índice)
-
-## Boas Práticas para APIs Assíncronas
-
-1. **Padronize Estruturas de Mensagem**: Use uma estrutura JSON padronizada para cada tipo de evento.
-2. **Tolerância a Falhas e Retry**: Implemente lógica de retry para mensagens que falharem no processamento, com limite de tentativas.
-3. **Configuração de TTL**: Defina um tempo de vida para mensagens (especialmente em RabbitMQ), evitando o acúmulo de mensagens obsoletas.
-4. **Controle de Concurrency**: Configure consumidores em grupos para evitar duplicidade e permitir escalabilidade.
-5. **Registro e Monitoramento**: Registre todas as mensagens processadas e monitoramento de filas/tópicos para detectar anomalias.
-6. **Idempotência**: Garanta que o processamento das mensagens seja idempotente, ou seja, o mesmo evento pode ser processado mais de uma vez sem efeitos indesejados.
-7. **Segurança**: Implemente controle de acesso nas filas e tópicos, garantindo que apenas serviços autorizados possam publicar ou consumir mensagens.
-8. **Limitação de Tamanho da Mensagem**: Defina um limite de tamanho para mensagens para evitar problemas de desempenho e possíveis rejeições de mensagens muito grandes.
+- **Cabeçalhos Sugeridos**:
+  - `X-Request-Id`: ID único da mensagem para rastreamento.
+  - `X-Retry-Count`: Contador de tentativas para lógica de retry.
+  - `X-Timestamp`: Data/hora de criação da mensagem.
 
 [Voltar ao Índice](#índice)
 
-## Documentação e Exemplo de Mensagens
+---
 
-Toda a documentação das APIs assíncronas deve estar na pasta `docs` do projeto. Essa documentação deve conter:
+## **6. Boas Práticas para APIs Assíncronas**
 
-1. **Arquivo `async_apis.md`**: Descrição dos eventos suportados, estrutura de mensagens e configuração de filas/tópicos.
-2. **Exemplos de Mensagens**: Exemplos de mensagens JSON para cada tipo de evento.
-3. **Arquivo `kafka_requests.http`** (opcional): Simulação de chamadas para tópicos Kafka para testes.
-4. **Postman Collection**: Uma coleção com exemplos de chamadas e mensagens para facilitar testes e validação.
+1. **Padronização**:
+   - Mantenha estruturas consistentes para todas as mensagens.
+2. **Tolerância a Falhas**:
+   - Configure lógica de retry com limites de tentativas.
+3. **Monitoramento**:
+   - Implante ferramentas como Prometheus e Grafana para rastrear mensagens.
+4. **Idempotência**:
+   - Garanta que mensagens processadas mais de uma vez não causem inconsistências.
+5. **Segurança**:
+   - Controle acesso a filas e tópicos com ACLs e autenticação.
+6. **Compactação**:
+   - Comprima mensagens maiores para reduzir tráfego de rede.
+7. **Auditoria**:
+   - Registre todas as mensagens processadas para rastreamento.
 
-### Estrutura da Pasta `docs`
+[Voltar ao Índice](#índice)
+
+---
+
+## **7. Documentação e Exemplo de Mensagens**
+
+### **Estrutura da Pasta `docs`**
 
 ```
 /docs
- ├── async_apis.md               # Documentação das APIs assíncronas
- ├── kafka_requests.http          # Exemplo de requisições para Kafka
- └── postman_collection.json      # Coleção do Postman para testes de APIs assíncronas
+ ├── async_apis.md                # Documentação detalhada de APIs assíncronas
+ ├── kafka_requests.http          # Exemplos de requisições Kafka
+ ├── rabbitmq_requests.http       # Exemplos de requisições RabbitMQ
+ └── postman_collection.json      # Coleção do Postman para APIs assíncronas
 ```
 
-### Exemplo de `async_apis.md`
+### **Exemplo de Arquivo `async_apis.md`**
 
 ```markdown
 # Documentação das APIs Assíncronas da QBem
 
 ## Eventos Suportados
 
-1. **order.created** - Evento disparado ao criar um novo pedido.
-   - **Payload**:
-     ```json
-     {
-       "event": "order.created",
-       "timestamp": "2024-10-29T12:34:56Z",
-       "data": {
-         "order_id": "7890",
-         "customer_id": "12345",
-         "items": [
-           {
-             "product_id": "9876",
-             "quantity": 2
-           }
-         ],
-         "total":
+### **order.created**
+- **Descrição**: Evento disparado ao criar um novo pedido.
+- **Payload**:
+  ```json
+  {
+    "event": "order.created",
+    "timestamp": "2024-10-29T12:34:56Z",
+    "data": {
+      "order_id": "7890",
+      "customer_id": "12345",
+      "total": 150.00,
+      "status": "pending"
+    }
+  }
+  ```
 
- 150.00,
-         "status": "pending"
-       }
-     }
-     ```
-
-2. **order.updated** - Evento disparado ao atualizar um pedido.
-   - **Payload**:
-     ```json
-     {
-       "event": "order.updated",
-       "timestamp": "2024-10-29T13:00:00Z",
-       "data": {
-         "order_id": "7890",
-         "status": "shipped"
-       }
-     }
-     ```
-
-## Configuração de Fila e Tópicos
-
-- **RabbitMQ**:
-  - Fila: `orders_queue`
-  - TTL: 1 hora
-
-- **Kafka**:
-  - Tópico: `orders`
-  - Partições: 3
-  - Replicação: 2
-
-## Boas Práticas para Consumidores
-
-- Lógica de retry para mensagens com falha
-- Controle de idempotência para evitar duplicidade
-```
+### **order.updated**
+- **Descrição**: Evento disparado ao atualizar um pedido.
+- **Payload**:
+  ```json
+  {
+    "event": "order.updated",
+    "timestamp": "2024-10-29T13:00:00Z",
+    "data": {
+      "order_id": "7890",
+      "status": "shipped"
+    }
+  }
+  ```
 
 [Voltar ao Índice](#índice)
