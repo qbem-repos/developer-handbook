@@ -1,62 +1,144 @@
-# Documentação de APIs da QBem
+# **Documentação de APIs da QBem**
 
-Este diretório contém toda a documentação e exemplos necessários para o uso e implementação das APIs da QBem, incluindo **APIs Web RESTful**, **Webhooks** e **APIs Assíncronas**. Cada tipo de API foi projetado para oferecer integração confiável, segura e eficiente com os sistemas da QBem, promovendo a comunicação entre serviços e facilitando a escalabilidade.
-
-## Índice de Documentação
-
-### 1. [APIs Web RESTful](web_apis.md)
-
-Este documento descreve as diretrizes e boas práticas para as APIs Web RESTful da QBem, incluindo:
-- Estrutura de URLs RESTful e convenções de nomenclatura.
-- Métodos HTTP e seus mapeamentos para operações CRUD.
-- Códigos de status padrão e cabeçalhos personalizados.
-- Boas práticas de segurança e versionamento.
+Este diretório contém toda a documentação e exemplos necessários para o uso e implementação das APIs da QBem, abrangendo **APIs Web RESTful**, **Webhooks** e **APIs Assíncronas**. Todas as APIs foram projetadas para oferecer integração confiável, segura e eficiente, promovendo a escalabilidade e a interoperabilidade entre os sistemas QBem e seus parceiros.
 
 ---
 
-### 2. [APIs de Webhook](webhooks.md)
+## **Índice de Documentação**
 
-Este documento detalha as diretrizes para configuração e uso de Webhooks na QBem, incluindo:
-- Estrutura do payload JSON e exemplos de eventos suportados (e.g., `user.created`, `order.updated`).
-- Configuração de URLs de Webhook e métodos de autenticação.
-- Cabeçalhos customizados e segurança com assinatura HMAC.
-- Boas práticas para implementação de Webhooks, como lógica de retry, verificação de assinatura e controle de duplicidade.
-
-
----
-
-### 3. [APIs Assíncronas (Redis e Kafka)](async_apis.md)
-
-Este documento aborda as diretrizes para implementação de APIs assíncronas da QBem, utilizando Redis e Kafka, incluindo:
-- Estrutura e configuração de mensagens para filas de mensagens e tópicos.
-- Métodos de comunicação para Redis e Kafka, com exemplos de publicação e consumo.
-- Cabeçalhos e metadados para rastreamento e controle de mensagens.
-- Boas práticas para APIs assíncronas, como controle de idempotência, retry e segurança.
-
+1. [APIs Web RESTful](#apis-web-restful)
+2. [APIs de Webhook](#apis-de-webhook)
+3. [APIs Assíncronas (Redis e Kafka)](#apis-assíncronas-redis-e-kafka)
+4. [Boas Práticas Gerais](#boas-práticas-gerais-para-todas-as-apis)
+5. [Estrutura do Diretório `docs`](#estrutura-da-pasta-docs)
 
 ---
 
-## Boas Práticas Gerais para Todas as APIs
+## **1. APIs Web RESTful**
 
-1. **Consistência no Idioma**: Todas as mensagens, respostas e campos de dados devem estar em inglês para garantir acessibilidade internacional.
-2. **HTTPS Obrigatório**: Toda comunicação deve ser feita via HTTPS para proteger os dados em trânsito.
-3. **Autenticação e Segurança**: Utilize OAuth 2.0 ou JWT para as APIs RESTful e Webhooks, e configure chaves de acesso e permissões para APIs Assíncronas.
-4. **Logs e Monitoramento**: Implemente logs detalhados para cada requisição ou evento, facilitando auditorias e troubleshooting.
-5. **Idempotência**: Garanta que as chamadas e eventos sejam idempotentes para evitar duplicidade de ações.
-6. **Retry e Tolerância a Falhas**: Para Webhooks e APIs Assíncronas, implemente lógica de retry com limites de tentativas para melhorar a resiliência.
+A documentação das APIs Web RESTful inclui:
 
-## Estrutura da Pasta `docs`
+- **Estrutura de URLs e Convenções**:
+  - Use recursos no plural (e.g., `/users`, `/orders`).
+  - Estruture URLs hierárquicas para refletir relações (e.g., `/users/{user_id}/orders`).
+  - Não inclua verbos nas URLs; utilize os métodos HTTP para expressar ações.
 
-Abaixo está a estrutura recomendada para o diretório `docs`:
+- **Métodos HTTP e Operações CRUD**:
+  - `GET`: Leitura de recursos.
+  - `POST`: Criação de recursos.
+  - `PUT`: Atualização completa de recursos.
+  - `PATCH`: Atualização parcial de recursos.
+  - `DELETE`: Exclusão de recursos.
+
+- **Códigos de Status**:
+  - Use os códigos de status adequados:
+    - `200 OK`: Requisição bem-sucedida.
+    - `201 Created`: Recurso criado.
+    - `400 Bad Request`: Dados inválidos.
+    - `401 Unauthorized`: Credenciais inválidas.
+    - `404 Not Found`: Recurso não encontrado.
+    - `500 Internal Server Error`: Erro no servidor.
+
+- **Boas Práticas**:
+  - **Versionamento**: Utilize versões na URL (e.g., `/v1/users`).
+  - **Paginação**: Adote paginação para grandes volumes de dados, seguindo o padrão `limit` e `offset`.
+  - **Cabeçalhos Personalizados**: Use cabeçalhos customizados, como `X-QBem-Request-Id` para rastreamento.
+
+---
+
+## **2. APIs de Webhook**
+
+A documentação de Webhooks cobre:
+
+- **Estrutura do Payload JSON**:
+  - Cada evento é enviado como um objeto JSON. Exemplo para `user.created`:
+    ```json
+    {
+      "event": "user.created",
+      "data": {
+        "user_id": "12345",
+        "email": "user@example.com"
+      },
+      "timestamp": "2024-12-02T12:00:00Z"
+    }
+    ```
+
+- **Configuração e Autenticação**:
+  - URLs de Webhook devem suportar HTTPS.
+  - Autentique usando HMAC com assinatura no cabeçalho `X-QBem-Signature`.
+
+- **Boas Práticas**:
+  - **Retry Automático**: Reenvie eventos em caso de falha com backoff exponencial.
+  - **Controle de Duplicidade**: Use IDs exclusivos para identificar eventos.
+  - **Verificação de Assinatura**: Valide a assinatura HMAC para garantir a autenticidade.
+
+---
+
+## **3. APIs Assíncronas (Redis e Kafka)**
+
+A documentação para APIs assíncronas inclui:
+
+- **Estrutura de Mensagens**:
+  - Mensagens devem conter metadados como `event_id`, `timestamp` e `correlation_id`.
+
+- **Exemplo de Mensagem Kafka**:
+  ```json
+  {
+    "event_id": "abcd1234",
+    "event_type": "order.updated",
+    "data": {
+      "order_id": "5678",
+      "status": "processed"
+    },
+    "timestamp": "2024-12-02T12:00:00Z"
+  }
+  ```
+
+- **Boas Práticas**:
+  - **Idempotência**: Utilize `event_id` para garantir que eventos sejam processados uma única vez.
+  - **Monitoramento**: Implante ferramentas como Prometheus para rastreamento de mensagens.
+  - **Resiliência**: Configure retries automáticos em caso de falhas de consumo.
+
+---
+
+## **4. Boas Práticas Gerais para Todas as APIs**
+
+1. **Consistência no Idioma**:
+   - Use o inglês como idioma padrão para nomes de campos, mensagens de erro e logs.
+
+2. **HTTPS Obrigatório**:
+   - Todas as APIs devem exigir HTTPS para proteger os dados em trânsito.
+
+3. **Autenticação e Autorização**:
+   - Use OAuth 2.0 ou JWT para autenticação segura.
+   - Configure escopos de autorização para restringir acesso a recursos específicos.
+
+4. **Versionamento de APIs**:
+   - Sempre inclua o número da versão na URL, começando com `/v1`.
+
+5. **Documentação Clara**:
+   - Forneça exemplos de requisição/resposta para cada endpoint ou evento.
+
+6. **Paginação**:
+   - Utilize padrões de paginação como `limit`, `offset` e inclua metadados para facilitar a navegação.
+
+7. **Retry e Tolerância a Falhas**:
+   - Webhooks e APIs assíncronas devem implementar lógica de retry com backoff exponencial.
+
+---
+
+## **5. Estrutura da Pasta `docs`**
+
+A estrutura recomendada para o diretório `docs`:
 
 ```
 /docs
  ├── web_api.md                    # Documentação das APIs Web RESTful
- ├── requests.http                 # Exemplo de requisições HTTP para APIs Web
+ ├── requests.http                 # Exemplos de requisições HTTP para APIs Web
  ├── webhooks.md                   # Documentação para Webhooks
- ├── webhook_requests.http         # Exemplo de requisições para Webhooks
+ ├── webhook_requests.http         # Exemplos de requisições para Webhooks
  ├── async_apis.md                 # Documentação para APIs Assíncronas (Redis e Kafka)
- ├── kafka_requests.http           # Exemplo de requisições para APIs Assíncronas Kafka
+ ├── kafka_requests.http           # Exemplos de mensagens Kafka
  ├── postman_collection.json       # Coleção consolidada do Postman com todas as APIs
  └── README.md                     # Índice e visão geral da documentação
 ```
