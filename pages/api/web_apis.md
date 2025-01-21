@@ -16,10 +16,10 @@ Este documento estabelece diretrizes e práticas recomendadas para o desenvolvim
 3. [APIs de Search Engine (Typesense)](#apis-de-search-engine-typesense)
    - [Estrutura de URLs para Busca](#estrutura-de-urls-para-busca)
    - [Parâmetros de Consulta](#parâmetros-de-consulta)
-   - [Cabeçalhos e Boas Práticas](#cabeçalhos-e-boas-práticas)
-4. [Segurança 🔒](#segurança)
-5. [Documentação 📚](#documentação)
-6. [Autenticação 🛡️](#autenticação)
+   - [Cabeçalhos e Boas Práticas](#cabeçalhos-e-boas-praticas)
+4. [Segurança 🔒](#seguranca)
+5. [Documentação 📚](#documentacao)
+6. [Autenticação 🛡️](#autenticacao)
 
 ---
 
@@ -48,16 +48,16 @@ As APIs RESTful devem ser projetadas para serem simples, previsíveis e consiste
 
 - **Use substantivos no plural**: Evite verbos. Exemplo: `/operators`, não `/getOperators`.
 - **Mantenha hierarquia clara**: Exemplo: `/operators/{operator_id}/tasks`.
-- **Inclua a versão na URL**: Facilita o gerenciamento de versões. Exemplo: `/v1`.
+- **Inclua a versão na URL**: Facilita o gerenciamento de versões. Exemplo: ``.
 
 **Exemplo de Endpoints:**
 - Listar Operadoras:
   ```http
-  GET http://api.qbem.net.br/v1/operators
+  GET http://api.example.com/operators
   ```
 - Detalhar uma Operadora:
   ```http
-  GET http://api.qbem.net.br/v1/operators/{operator_id}
+  GET http://api.qbem.net.br/operators/{operator_id}
   ```
 
 ### 🔧 **Métodos HTTP**
@@ -85,13 +85,32 @@ Utilize códigos de status padronizados para comunicar o resultado das operaçõ
 | 401    | Não autorizado                |
 | 403    | Proibido                      |
 | 404    | Não encontrado                |
+| 409    | Conflito                      |
 | 500    | Erro no servidor              |
 
 ### 🛠️ **Cabeçalhos e Metadados**
 
-- **X-Request-Id**: ID único para rastrear a requisição.
-- **X-Content-Size**: Tamanho total da resposta (útil em paginação).
-- **Content-Type**: Sempre inclua `application/json` para respostas JSON.
+Os cabeçalhos abaixo devem ser incluídos em requisições ou respostas, conforme necessário:
+
+#### 1. **Headers de Requisição**
+| **Header**          | **Descrição**                              | **Exemplo**       |
+|----------------------|--------------------------------------------|-------------------|
+| `Accept-Language`   | Idioma preferido na resposta               | `en-US`, `pt-BR`  |
+| `Content-Language`  | Idioma do conteúdo enviado                 | `en-US`           |
+| `X-API-Version`     | Versão da API                              | `1`, `2`          |
+| `X-Tenant-Id`       | Identificador único do cliente (multi-tenant)| `abc123`          |
+| `X-Request-Id`      | Identificador único da requisição, usado para rastreamento e debug | `123e4567-e89b-12d3-a456-426614174000` |
+
+#### 2. **Headers de Resposta (Metadados)**
+| **Header**          | **Descrição**                              | **Exemplo**       |
+|----------------------|--------------------------------------------|-------------------|
+| `X-Created-At`      | Data/hora de criação do recurso            | `2025-01-21T10:00:00Z` |
+| `X-Updated-At`      | Data/hora da última atualização            | `2025-01-21T11:00:00Z` |
+| `X-Deleted-At`      | Data/hora de exclusão (se aplicável)       | `null` ou `2025-01-21T12:00:00Z` |
+| `X-Tenant-Id`       | Identificador do cliente (se multi-tenant) | `abc123`          |
+| `Content-Language`  | Idioma do conteúdo enviado                 | `pt-BR`           |
+| `X-API-Version`     | Versão da API                              | `1`               |
+| `X-Request-Id`      | Identificador único da requisição, útil para auditorias e rastreamento | `123e4567-e89b-12d3-a456-426614174000` |
 
 ### 🔄 **Versionamento**
 
@@ -115,7 +134,7 @@ APIs de Search Engine utilizam o Typesense para oferecer buscas rápidas e efici
 
 **Exemplo de Busca com Filtro**:
 ```http
-GET http://search.qbem.net.br/v1/collections/operators/documents/search?query_by=name&filter_by=active:true
+GET http://search.example.com/v1/collections/operators/documents/search?query_by=name&filter_by=active:true
 ```
 
 ### 🔍 **Parâmetros de Consulta**
@@ -181,7 +200,7 @@ Use um fluxo de autenticação como OAuth 2.0 ou JWT.
 
 **Exemplo de Obtenção de Token**:
 ```http
-POST https://auth.qbem.net.br/oauth/token
+POST https://auth.example.com/oauth/token
 Content-Type: application/json
 
 {
@@ -217,3 +236,4 @@ Authorization: Bearer your-access-token
 ```
 
 [Voltar ao Índice](#índice)
+
